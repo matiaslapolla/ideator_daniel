@@ -12,6 +12,10 @@ import { StackExchangeSource } from "../sources/stackexchange";
 import { HNFirebaseSource } from "../sources/hn-firebase";
 import { WikipediaSource } from "../sources/wikipedia";
 import { NpmDownloadsSource } from "../sources/npm-downloads";
+import { ProductHuntSource } from "../sources/producthunt";
+import { BetaListSource } from "../sources/betalist";
+import { AlternativeToSource } from "../sources/alternativeto";
+import { BLSSource } from "../sources/bls";
 import { IdeaRepository } from "../storage/repository";
 import { initDb } from "../storage/db";
 import { logger } from "../utils/logger";
@@ -52,6 +56,14 @@ export class PipelineOrchestrator {
     this.registry.register(new HNFirebaseSource());
     this.registry.register(new WikipediaSource());
     this.registry.register(new NpmDownloadsSource());
+    if (process.env.PRODUCTHUNT_TOKEN) {
+      this.registry.register(new ProductHuntSource());
+    }
+    this.registry.register(new BetaListSource());
+    this.registry.register(new AlternativeToSource());
+    if (process.env.BLS_API_KEY) {
+      this.registry.register(new BLSSource());
+    }
   }
 
   onEvent(handler: PipelineEventHandler): void {
