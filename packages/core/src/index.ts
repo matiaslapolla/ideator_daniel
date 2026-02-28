@@ -24,6 +24,10 @@ export { StackExchangeSource } from "./sources/stackexchange";
 export { HNFirebaseSource } from "./sources/hn-firebase";
 export { WikipediaSource } from "./sources/wikipedia";
 export { NpmDownloadsSource } from "./sources/npm-downloads";
+export { ProductHuntSource } from "./sources/producthunt";
+export { BetaListSource } from "./sources/betalist";
+export { AlternativeToSource } from "./sources/alternativeto";
+export { BLSSource } from "./sources/bls";
 
 // Pipeline
 export { PipelineOrchestrator } from "./pipeline/orchestrator";
