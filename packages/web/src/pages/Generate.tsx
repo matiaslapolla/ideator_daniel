@@ -24,24 +24,24 @@ export default function Generate() {
     setEvents([]);
     setCurrentPhase(null);
 
-    // Connect WebSocket for live updates
-    ws = createPipelineSocket((event) => {
-      if (event.phase) setCurrentPhase(event.phase);
-      if (event.message) {
-        setEvents((prev) => [...prev, { phase: event.phase, message: event.message }]);
-      }
-      if (event.status === "completed") {
-        setDone(true);
-        setRunning(false);
-      }
-      if (event.status === "failed") {
-        setError(event.message);
-        setRunning(false);
-      }
-    });
-
     try {
-      await api.runPipeline(query());
+      const { runId } = await api.runPipeline(query());
+
+      // Connect WebSocket filtered to this specific run
+      ws = createPipelineSocket((event) => {
+        if (event.phase) setCurrentPhase(event.phase);
+        if (event.message) {
+          setEvents((prev) => [...prev, { phase: event.phase, message: event.message }]);
+        }
+        if (event.status === "completed") {
+          setDone(true);
+          setRunning(false);
+        }
+        if (event.status === "failed") {
+          setError(event.message);
+          setRunning(false);
+        }
+      }, runId);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to start pipeline");
       setRunning(false);

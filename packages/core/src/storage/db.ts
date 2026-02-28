@@ -1,4 +1,5 @@
 import { Database } from "bun:sqlite";
+import { mkdirSync } from "fs";
 import { logger } from "../utils/logger";
 
 let db: Database | null = null;
@@ -10,8 +11,10 @@ export function getDb(): Database {
     const dir = dbPath.substring(0, dbPath.lastIndexOf("/"));
     if (dir) {
       try {
-        require("fs").mkdirSync(dir, { recursive: true });
-      } catch {}
+        mkdirSync(dir, { recursive: true });
+      } catch (e: unknown) {
+        if ((e as NodeJS.ErrnoException).code !== "EEXIST") throw e;
+      }
     }
     db = new Database(dbPath, { create: true });
     db.exec("PRAGMA journal_mode = WAL");

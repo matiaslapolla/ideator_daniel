@@ -2,7 +2,11 @@ node_modules/
 dist/
 .env
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
+data/
 .DS_Store
 .turbo
 packages/web/dist/
+.claude/

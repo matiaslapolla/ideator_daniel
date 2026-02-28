@@ -19,21 +19,17 @@ export function pipelineRoutes(orchestrator: PipelineOrchestrator) {
   // Start pipeline run (async — returns immediately)
   app.post("/run", zValidator("json", RunPipelineSchema), (c) => {
     const body = c.req.valid("json");
+    const runId = crypto.randomUUID();
 
-    // Start run in background
-    const runPromise = orchestrator.run({
-      query: body.query,
-      sources: body.sources,
-      limit: body.limit,
-    });
+    // Start run in background with the pre-generated runId
+    orchestrator
+      .run({ query: body.query, sources: body.sources, limit: body.limit, runId })
+      .catch(() => {}); // prevent unhandled rejection
 
-    // The orchestrator creates the run record synchronously at the start.
-    // After the promise settles, we can find it in recent runs.
-    runPromise.catch(() => {}); // prevent unhandled rejection
-
-    // Return immediately. Client polls /runs or uses WebSocket.
+    // Return runId immediately so clients can subscribe/poll
     return c.json({
       message: "Pipeline started",
+      runId,
       query: body.query,
     });
   });

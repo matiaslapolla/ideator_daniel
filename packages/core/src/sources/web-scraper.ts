@@ -6,6 +6,8 @@ import { logger } from "../utils/logger";
 const DEFAULT_URLS = [
   "https://www.indiehackers.com/",
   "https://microconf.com/blog",
+  "https://betalist.com/",
+  "https://www.failory.com/blog",
 ];
 
 export class WebScraperSource extends BaseSource {

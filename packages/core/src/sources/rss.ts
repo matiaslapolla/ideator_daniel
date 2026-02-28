@@ -9,6 +9,13 @@ const DEFAULT_FEEDS = [
   "https://www.producthunt.com/feed",
   "https://feeds.feedburner.com/TechCrunch/startups",
   "https://blog.ycombinator.com/feed/",
+  "https://lobste.rs/rss",
+  "https://dev.to/feed/tag/startup",
+  "https://dev.to/feed/tag/saas",
+  "https://dev.to/feed/tag/webdev",
+  "https://www.betalist.com/feed",
+  "https://nodeweekly.com/rss/",
+  "https://javascriptweekly.com/rss/",
 ];
 
 export class RSSSource extends BaseSource {

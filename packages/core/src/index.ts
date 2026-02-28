@@ -17,6 +17,13 @@ export { RedditSource } from "./sources/reddit";
 export { GoogleTrendsSource } from "./sources/google-trends";
 export { RSSSource } from "./sources/rss";
 export { WebScraperSource } from "./sources/web-scraper";
+export { DevToSource } from "./sources/devto";
+export { LobstersSource } from "./sources/lobsters";
+export { GitHubSource } from "./sources/github";
+export { StackExchangeSource } from "./sources/stackexchange";
+export { HNFirebaseSource } from "./sources/hn-firebase";
+export { WikipediaSource } from "./sources/wikipedia";
+export { NpmDownloadsSource } from "./sources/npm-downloads";
 
 // Pipeline
 export { PipelineOrchestrator } from "./pipeline/orchestrator";

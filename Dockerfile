@@ -2,7 +2,7 @@ FROM oven/bun:1 AS base
 WORKDIR /app
 
 # Install dependencies
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 COPY packages/core/package.json packages/core/
 COPY packages/api/package.json packages/api/
 COPY packages/web/package.json packages/web/

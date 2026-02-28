@@ -54,7 +54,7 @@ export const api = {
 
   // Pipeline
   runPipeline: (query: string, sources?: string[]) =>
-    apiFetch<{ message: string; query: string }>("/pipeline/run", {
+    apiFetch<{ message: string; runId: string; query: string }>("/pipeline/run", {
       method: "POST",
       body: JSON.stringify({ query, sources }),
     }),
@@ -75,10 +75,12 @@ export const api = {
 
 // WebSocket for live pipeline updates
 export function createPipelineSocket(
-  onEvent: (event: { runId: string; phase: string; status: string; message: string; data?: unknown }) => void
+  onEvent: (event: { runId: string; phase: string; status: string; message: string; data?: unknown }) => void,
+  runId?: string
 ): WebSocket {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  const ws = new WebSocket(`${protocol}//${window.location.host}/ws/pipeline`);
+  const path = runId ? `/ws/pipeline/${runId}` : "/ws/pipeline";
+  const ws = new WebSocket(`${protocol}//${window.location.host}${path}`);
 
   ws.onmessage = (e) => {
     try {

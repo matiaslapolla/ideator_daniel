@@ -5,6 +5,13 @@ import { RedditSource } from "../sources/reddit";
 import { GoogleTrendsSource } from "../sources/google-trends";
 import { RSSSource } from "../sources/rss";
 import { WebScraperSource } from "../sources/web-scraper";
+import { DevToSource } from "../sources/devto";
+import { LobstersSource } from "../sources/lobsters";
+import { GitHubSource } from "../sources/github";
+import { StackExchangeSource } from "../sources/stackexchange";
+import { HNFirebaseSource } from "../sources/hn-firebase";
+import { WikipediaSource } from "../sources/wikipedia";
+import { NpmDownloadsSource } from "../sources/npm-downloads";
 import { IdeaRepository } from "../storage/repository";
 import { initDb } from "../storage/db";
 import { logger } from "../utils/logger";
@@ -20,6 +27,7 @@ export interface PipelineConfig {
   query: string;
   sources?: string[];
   limit?: number;
+  runId?: string;
 }
 
 export class PipelineOrchestrator {
@@ -37,6 +45,13 @@ export class PipelineOrchestrator {
     this.registry.register(new GoogleTrendsSource());
     this.registry.register(new RSSSource());
     this.registry.register(new WebScraperSource());
+    this.registry.register(new DevToSource());
+    this.registry.register(new LobstersSource());
+    this.registry.register(new GitHubSource());
+    this.registry.register(new StackExchangeSource());
+    this.registry.register(new HNFirebaseSource());
+    this.registry.register(new WikipediaSource());
+    this.registry.register(new NpmDownloadsSource());
   }
 
   onEvent(handler: PipelineEventHandler): void {
@@ -54,7 +69,7 @@ export class PipelineOrchestrator {
   async run(config: PipelineConfig): Promise<PipelineRun> {
     initDb();
 
-    const runId = crypto.randomUUID();
+    const runId = config.runId ?? crypto.randomUUID();
     const run: PipelineRun = {
       id: runId,
       status: "running",

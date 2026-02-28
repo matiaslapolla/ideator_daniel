@@ -31,6 +31,12 @@ const DEFAULT_SUBREDDITS = [
   "AppIdeas",
   "indiehackers",
   "microsaas",
+  "sideproject",
+  "advancedentrepreneur",
+  "webdev",
+  "programming",
+  "ProductManagement",
+  "growmybusiness",
 ];
 
 export class RedditSource extends BaseSource {
