@@ -1,0 +1,15 @@
+{
+  "name": "ideator",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "bun --watch packages/api/src/index.ts",
+    "dev:web": "cd packages/web && bun run dev",
+    "dev:tui": "bun packages/tui/src/index.tsx",
+    "build:web": "cd packages/web && bun run build",
+    "test": "bun test",
+    "pipeline": "bun packages/core/src/pipeline/orchestrator.ts"
+  }
+}
