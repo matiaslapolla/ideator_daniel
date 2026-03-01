@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Generate from "./pages/Generate";
 import IdeaDetail from "./pages/IdeaDetail";
 import History from "./pages/History";
+import RunDetail from "./pages/RunDetail";
 import Settings from "./pages/Settings";
 
 render(
@@ -14,6 +15,7 @@ render(
       <Route path="/generate" component={Generate} />
       <Route path="/ideas/:id" component={IdeaDetail} />
       <Route path="/history" component={History} />
+      <Route path="/history/:runId" component={RunDetail} />
       <Route path="/settings" component={Settings} />
     </Router>
   ),

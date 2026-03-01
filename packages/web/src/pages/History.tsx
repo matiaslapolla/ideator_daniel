@@ -1,4 +1,5 @@
 import { createResource, For, Show } from "solid-js";
+import { A } from "@solidjs/router";
 import { api } from "../api/client";
 
 export default function History() {
@@ -19,7 +20,7 @@ export default function History() {
         {(data) => (
           <For each={data().runs} fallback={<p style={{ color: "#505060" }}>No pipeline runs yet.</p>}>
             {(run) => (
-              <div style={{
+              <A href={`/history/${run.id}`} style={{
                 display: "flex",
                 "justify-content": "space-between",
                 "align-items": "center",
@@ -28,6 +29,9 @@ export default function History() {
                 "border-radius": "8px",
                 "margin-bottom": "8px",
                 border: "1px solid #2a2a4a",
+                "text-decoration": "none",
+                color: "inherit",
+                cursor: "pointer",
               }}>
                 <div>
                   <div style={{ "font-size": "14px", "font-weight": "500" }}>{run.query}</div>
@@ -46,7 +50,7 @@ export default function History() {
                 }}>
                   {run.status}
                 </span>
-              </div>
+              </A>
             )}
           </For>
         )}

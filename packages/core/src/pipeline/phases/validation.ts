@@ -18,7 +18,7 @@ const ValidationOutputSchema = z.object({
 
 export type ValidationOutput = z.infer<typeof ValidationOutputSchema>;
 
-const SYSTEM_PROMPT = `You are a business development expert who validates software product ideas by identifying target client segments and specific real companies to contact.
+const BASE_SYSTEM_PROMPT = `You are a business development expert who validates software product ideas by identifying target client segments and specific real companies to contact.
 
 For each idea, identify:
 1. Target client segments with pain points
@@ -28,17 +28,28 @@ For each idea, identify:
 
 Only suggest real, existing companies. Return JSON matching the exact schema.`;
 
+export interface ValidationPhaseOptions {
+  temperature?: number;
+  domain?: string;
+}
+
 export async function runValidation(
   ideas: CandidateIdea[],
-  emit: (event: Partial<PipelineEvent>) => void
+  emit: (event: Partial<PipelineEvent>) => void,
+  options?: ValidationPhaseOptions
 ): Promise<ValidationOutput> {
   emit({
     message: `Validating ${ideas.length} ideas and finding target clients...`,
     phase: "validation",
   });
 
+  const systemPrompt = options?.domain
+    ? `${BASE_SYSTEM_PROMPT}\n\nFocus validation on the ${options.domain} domain. Prioritize companies and segments relevant to ${options.domain}.`
+    : BASE_SYSTEM_PROMPT;
+
   const result = await structuredGenerate({
-    system: SYSTEM_PROMPT,
+    system: systemPrompt,
+    temperature: options?.temperature,
     prompt: `Validate these product ideas and identify target clients and specific companies to contact:
 
 ${ideas

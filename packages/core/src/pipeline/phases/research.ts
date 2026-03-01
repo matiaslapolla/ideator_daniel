@@ -29,28 +29,43 @@ const ResearchOutputSchema = z.object({
 
 export type ResearchOutput = z.infer<typeof ResearchOutputSchema>;
 
-const SYSTEM_PROMPT = `You are a market research analyst specializing in B2B and B2C software opportunities. Analyze raw data from multiple sources to identify trends, pain points, and opportunity signals.
+const BASE_SYSTEM_PROMPT = `You are a market research analyst specializing in B2B and B2C software opportunities. Analyze raw data from multiple sources to identify trends, pain points, and opportunity signals.
 
 Return JSON matching the exact schema requested. Be specific and actionable.`;
+
+export interface ResearchPhaseOptions {
+  temperature?: number;
+  domain?: string;
+}
 
 export async function runResearch(
   sourceData: SourceResult[],
   query: string,
-  emit: (event: Partial<PipelineEvent>) => void
+  emit: (event: Partial<PipelineEvent>) => void,
+  options?: ResearchPhaseOptions
 ): Promise<ResearchOutput> {
   emit({ message: "Analyzing trends and pain points...", phase: "research" });
 
+  const systemPrompt = options?.domain
+    ? `${BASE_SYSTEM_PROMPT}\n\nFocus your analysis on the ${options.domain} domain. Prioritize trends, pain points, and opportunities specific to ${options.domain}.`
+    : BASE_SYSTEM_PROMPT;
+
+  const temperature = options?.temperature
+    ? Math.max(0.3, options.temperature - 0.1)
+    : undefined;
+
   // Condense source data to fit in context
   const condensed = sourceData
-    .slice(0, 50) // limit to avoid token overflow
+    .slice(0, 100)
     .map(
       (s, i) =>
-        `[${i + 1}] (${s.sourceType}) ${s.title}\n${s.content.slice(0, 300)}`
+        `[${i + 1}] (${s.sourceType}) ${s.title}\n${s.content.slice(0, 500)}`
     )
     .join("\n\n");
 
   const result = await structuredGenerate({
-    system: SYSTEM_PROMPT,
+    system: systemPrompt,
+    temperature,
     prompt: `Analyze the following ${sourceData.length} data points collected for the query "${query}".
 
 Identify:
