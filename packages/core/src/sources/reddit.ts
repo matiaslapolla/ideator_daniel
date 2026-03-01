@@ -49,6 +49,14 @@ export class RedditSource extends BaseSource {
     this.subreddits = subreddits ?? DEFAULT_SUBREDDITS;
   }
 
+  addSubreddits(extra: string[]): void {
+    this.subreddits = [...new Set([...this.subreddits, ...extra])];
+  }
+
+  resetToDefaults(): void {
+    this.subreddits = [...DEFAULT_SUBREDDITS];
+  }
+
   async fetch(options: SourceOptions): Promise<SourceResult[]> {
     const { query, limit = 20 } = options;
     const perSub = Math.ceil(limit / this.subreddits.length);

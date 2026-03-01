@@ -35,6 +35,14 @@ export class RSSSource extends BaseSource {
     });
   }
 
+  addFeeds(extra: string[]): void {
+    this.feeds = [...new Set([...this.feeds, ...extra])];
+  }
+
+  resetToDefaults(): void {
+    this.feeds = [...DEFAULT_FEEDS];
+  }
+
   async fetch(options: SourceOptions): Promise<SourceResult[]> {
     const { query, limit = 20 } = options;
     const queryLower = query.toLowerCase();

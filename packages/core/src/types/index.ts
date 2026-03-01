@@ -121,6 +121,31 @@ export interface PipelineEvent {
   timestamp: string;
 }
 
+// ── Domain ──────────────────────────────────────────────────
+
+export const DomainSchema = z.enum([
+  "SaaS",
+  "Fintech",
+  "Health",
+  "Education",
+  "E-commerce",
+  "DevTools",
+  "AI/ML",
+  "Marketplace",
+  "Social",
+  "Gaming",
+  "Sustainability",
+]);
+export type Domain = z.infer<typeof DomainSchema>;
+
+// ── Custom Sources ──────────────────────────────────────────
+
+export const CustomSourcesSchema = z.object({
+  redditSubreddits: z.array(z.string()).optional(),
+  rssFeeds: z.array(z.string()).optional(),
+});
+export type CustomSources = z.infer<typeof CustomSourcesSchema>;
+
 // ── AI Provider Config ──────────────────────────────────────
 
 export interface AIProviderConfig {

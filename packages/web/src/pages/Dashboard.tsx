@@ -1,12 +1,16 @@
-import { createResource, For, Show } from "solid-js";
+import { createResource, createSignal, For, Show } from "solid-js";
 import { A } from "@solidjs/router";
 import { api } from "../api/client";
 import IdeaCard from "../components/IdeaCard";
 import PipelineStatus from "../components/PipelineStatus";
 
+const PAGE_SIZE = 6;
+
 export default function Dashboard() {
-  const [ideas] = createResource(() => api.listIdeas(6));
+  const [page, setPage] = createSignal(0);
+  const [ideas] = createResource(page, (p) => api.listIdeas(PAGE_SIZE, p * PAGE_SIZE));
   const [health] = createResource(() => api.health().catch(() => null));
+  const totalPages = () => Math.ceil((ideas()?.total ?? 0) / PAGE_SIZE);
 
   return (
     <div>
@@ -48,7 +52,9 @@ export default function Dashboard() {
 
       <PipelineStatus />
 
-      <h2 style={{ "font-size": "16px", margin: "32px 0 16px", color: "#a0a0c0" }}>Recent Ideas</h2>
+      <h2 style={{ "font-size": "16px", margin: "32px 0 16px", color: "#a0a0c0" }}>
+        {page() === 0 ? "Recent Ideas" : "Ideas"}
+      </h2>
       <div style={{ display: "grid", "grid-template-columns": "repeat(auto-fill, minmax(340px, 1fr))", gap: "16px" }}>
         <Show when={ideas()?.ideas} fallback={<p style={{ color: "#505060" }}>Loading...</p>}>
           {(list) => (
@@ -66,6 +72,44 @@ export default function Dashboard() {
           )}
         </Show>
       </div>
+
+      <Show when={totalPages() > 1}>
+        <div style={{ display: "flex", "justify-content": "center", "align-items": "center", gap: "12px", "margin-top": "32px" }}>
+          <button
+            disabled={page() === 0}
+            onClick={() => setPage((p) => p - 1)}
+            style={{
+              padding: "8px 16px",
+              background: page() === 0 ? "#1a1a2e" : "#2a2a4a",
+              color: page() === 0 ? "#505060" : "#e0e0ff",
+              border: "1px solid #2a2a4a",
+              "border-radius": "6px",
+              cursor: page() === 0 ? "default" : "pointer",
+              "font-size": "13px",
+            }}
+          >
+            Previous
+          </button>
+          <span style={{ "font-size": "13px", color: "#808090" }}>
+            {page() + 1} / {totalPages()}
+          </span>
+          <button
+            disabled={page() + 1 >= totalPages()}
+            onClick={() => setPage((p) => p + 1)}
+            style={{
+              padding: "8px 16px",
+              background: page() + 1 >= totalPages() ? "#1a1a2e" : "#2a2a4a",
+              color: page() + 1 >= totalPages() ? "#505060" : "#e0e0ff",
+              border: "1px solid #2a2a4a",
+              "border-radius": "6px",
+              cursor: page() + 1 >= totalPages() ? "default" : "pointer",
+              "font-size": "13px",
+            }}
+          >
+            Next
+          </button>
+        </div>
+      </Show>
     </div>
   );
 }

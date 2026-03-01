@@ -2,11 +2,16 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import type { PipelineOrchestrator } from "@ideator/core";
+import { DomainSchema, CustomSourcesSchema } from "@ideator/core";
 
 const RunPipelineSchema = z.object({
   query: z.string().min(3).max(500),
   sources: z.array(z.string()).optional(),
   limit: z.number().min(5).max(100).optional(),
+  domain: DomainSchema.optional(),
+  creativity: z.number().min(0).max(100).optional(),
+  customSources: CustomSourcesSchema.optional(),
+  onlyCustomSources: z.boolean().optional(),
 });
 
 // Track active runs so we can return runIds
@@ -23,7 +28,16 @@ export function pipelineRoutes(orchestrator: PipelineOrchestrator) {
 
     // Start run in background with the pre-generated runId
     orchestrator
-      .run({ query: body.query, sources: body.sources, limit: body.limit, runId })
+      .run({
+        query: body.query,
+        sources: body.sources,
+        limit: body.limit,
+        domain: body.domain,
+        creativity: body.creativity,
+        customSources: body.customSources,
+        onlyCustomSources: body.onlyCustomSources,
+        runId,
+      })
       .catch(() => {}); // prevent unhandled rejection
 
     // Return runId immediately so clients can subscribe/poll

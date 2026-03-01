@@ -14,7 +14,7 @@ const FunnelOutputSchema = z.object({
   ),
 });
 
-const SYSTEM_PROMPT = `You are a growth marketing expert specializing in $0-cost customer acquisition strategies for software startups. Design marketing funnels that cost nothing or near-nothing.
+const BASE_SYSTEM_PROMPT = `You are a growth marketing expert specializing in $0-cost customer acquisition strategies for software startups. Design marketing funnels that cost nothing or near-nothing.
 
 Focus on:
 - Content marketing, SEO, social media (organic)
@@ -25,19 +25,30 @@ Focus on:
 
 Return JSON matching the exact schema.`;
 
+export interface OutputPhaseOptions {
+  temperature?: number;
+  domain?: string;
+}
+
 export async function runOutput(
   ideas: CandidateIdea[],
   validation: ValidationOutput,
   sourceData: SourceResult[],
-  emit: (event: Partial<PipelineEvent>) => void
+  emit: (event: Partial<PipelineEvent>) => void,
+  options?: OutputPhaseOptions
 ): Promise<Idea[]> {
   emit({
     message: "Designing marketing funnels and generating final reports...",
     phase: "output",
   });
 
+  const systemPrompt = options?.domain
+    ? `${BASE_SYSTEM_PROMPT}\n\nTailor marketing strategies for the ${options.domain} domain. Consider domain-specific channels, communities, and outreach approaches.`
+    : BASE_SYSTEM_PROMPT;
+
   const funnelResult = await structuredGenerate({
-    system: SYSTEM_PROMPT,
+    system: systemPrompt,
+    temperature: options?.temperature,
     prompt: `Design $0-cost marketing funnels for each of these validated product ideas:
 
 ${ideas
@@ -86,7 +97,7 @@ Return as JSON:
       targetClients: v?.targetClients ?? [],
       clientContacts: v?.clientContacts ?? [],
       marketingFunnels: f?.marketingFunnels ?? [],
-      sourceData: sourceData.slice(0, 10).map((s) => ({
+      sourceData: sourceData.slice(0, 20).map((s) => ({
         sourceType: s.sourceType,
         title: s.title,
         url: s.url,

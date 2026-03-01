@@ -41,6 +41,18 @@ export interface IdeaDetail {
   createdAt: string;
 }
 
+export interface RunDetail {
+  id: string;
+  status: string;
+  query: string;
+  sources: string[];
+  results: IdeaSummary[];
+  currentPhase: string | null;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
 export const api = {
   // Ideas
   listIdeas: (limit = 50, offset = 0) =>
@@ -53,16 +65,26 @@ export const api = {
     apiFetch<{ success: boolean }>(`/ideas/${id}`, { method: "DELETE" }),
 
   // Pipeline
-  runPipeline: (query: string, sources?: string[]) =>
+  runPipeline: (opts: {
+    query: string;
+    sources?: string[];
+    domain?: string;
+    creativity?: number;
+    customSources?: { redditSubreddits?: string[]; rssFeeds?: string[] };
+    onlyCustomSources?: boolean;
+  }) =>
     apiFetch<{ message: string; runId: string; query: string }>("/pipeline/run", {
       method: "POST",
-      body: JSON.stringify({ query, sources }),
+      body: JSON.stringify(opts),
     }),
 
   listRuns: (limit = 20) =>
     apiFetch<{ runs: Array<{ id: string; status: string; query: string; currentPhase: string; createdAt: string }> }>(
       `/pipeline/runs?limit=${limit}`
     ),
+
+  getRunStatus: (runId: string) =>
+    apiFetch<RunDetail>(`/pipeline/status/${runId}`),
 
   // Sources
   listSources: () =>
